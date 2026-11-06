@@ -1,5 +1,5 @@
 /*
- * ASCII SOFT Redmine Theme 1.0.0 — theme.js
+ * ASCII SOFT Redmine Theme 1.1.0 — theme.js
  * 플러그인(asciisoft_portal)이 있으면 알림 · 프로젝트 헤더 · 통계 · 화면 모드 저장을 사용하고,
  * 없으면 화면 꾸미기만 동작합니다. 외부 라이브러리 없이 동작합니다(레드마인 기본 jQuery만 선택적으로 사용).
  */
@@ -24,6 +24,11 @@
       empty: '새 알림이 없습니다', all: '전체', filters: '검색조건', mode: '화면 모드', editHeader: '헤더 설정',
       sNew: '신규', sProgress: '진행', sOverdue: '지연', sPercent: '전체 진척도', byStatus: '상태별',
       private: '비공개', first: '처음', last: '끝', close: '닫기', today: '오늘', tomorrow: '내일',
+      phLogin: '계정', phPassword: '패스워드', loginTitle: '로그인', loginSub: '계정 정보를 입력해 주세요',
+      artTitle: '요청부터 완료까지,<br>한 곳에서 함께 봅니다', artText: '요청 등록, 진행 상황, 문서와 일정을 고객사와 함께 확인하는 프로젝트센터입니다.',
+      artTags: ['요청 관리', '진행 현황', '문서 · 위키', '일정'],
+      hello: function (n) { return (n ? n + '님, ' : '') + '반갑습니다'; }, helloSub: '자주 쓰는 메뉴에서 바로 시작해 보세요.',
+      qMy: ['내 페이지', '내 요청과 일정을 한눈에'], qProjects: ['프로젝트', '참여 중인 프로젝트 목록'], qIssues: ['요청', '전체 요청 목록'], qSearch: ['검색', '요청 · 문서 · 위키 검색'],
       kAssigned: function (a) { return a ? a + '님이 요청을 배정했습니다' : '요청이 배정되었습니다'; },
       kMention: function (a) { return (a || '누군가') + '님이 회원님을 언급했습니다'; },
       kStatus: function (a, info) { return '상태가 \u2018' + (info || '') + '\u2019(으)로 변경되었습니다'; },
@@ -40,6 +45,11 @@
       empty: 'No new notifications', all: 'All', filters: 'Filters', mode: 'Color mode', editHeader: 'Header settings',
       sNew: 'New', sProgress: 'In progress', sOverdue: 'Overdue', sPercent: 'Progress', byStatus: 'By status',
       private: 'Private', first: 'First', last: 'Last', close: 'Close', today: 'today', tomorrow: 'tomorrow',
+      phLogin: 'Login', phPassword: 'Password', loginTitle: 'Sign in', loginSub: 'Enter your account details',
+      artTitle: 'From request to done,<br>all in one place', artText: 'A project center to share requests, progress, documents and schedules with your clients.',
+      artTags: ['Requests', 'Progress', 'Docs · Wiki', 'Schedule'],
+      hello: function (n) { return 'Welcome' + (n ? ', ' + n : ''); }, helloSub: 'Start from your most-used menus.',
+      qMy: ['My page', 'Your requests and schedule'], qProjects: ['Projects', 'Projects you belong to'], qIssues: ['Requests', 'All requests'], qSearch: ['Search', 'Requests, documents, wiki'],
       kAssigned: function (a) { return a ? a + ' assigned a request to you' : 'A request was assigned to you'; },
       kMention: function (a) { return (a || 'Someone') + ' mentioned you'; },
       kStatus: function (a, info) { return 'Status changed to \u2018' + (info || '') + '\u2019'; },
@@ -88,7 +98,10 @@
     at: '<circle cx="12" cy="12" r="4"/><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-4 8"/>',
     swap: '<path d="M4 7h13l-3-3M20 17H7l3 3"/>',
     chat: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
-    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>'
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+    home: '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
+    folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+    list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'
   };
   function svg(name, w) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 2) +
@@ -131,6 +144,11 @@
     safe(buildHero);
     safe(buildSidebar);
     safe(buildIssueToolbar);
+    safe(buildIssueTitle);
+    safe(initIssueEdit);
+    safe(buildLogin);
+    safe(buildWelcome);
+    safe(fixMyPage);
     safe(function () { decorate(D); });
     safe(buildToasts);
     safe(initNotifications);
@@ -334,7 +352,7 @@
     var ctx = cv.getContext('2d');
     if (!ctx) return;
     var w = 0, h = 0, cells = [], mx = -1e4, my = -1e4, raf = 0;
-    function color() { return (getComputedStyle(H).getPropertyValue('--as-hex') || '46,83,146').trim(); }
+    function color() { return (getComputedStyle(header).getPropertyValue('--as-hex') || '46,83,146').trim(); }
     function size() {
       var r = header.getBoundingClientRect(), d = Math.min(W.devicePixelRatio || 1, 2);
       w = r.width; h = r.height; cv.width = w * d; cv.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0);
@@ -374,10 +392,16 @@
     if (!sw || sw.classList.contains('as-done')) return;
     sw.classList.add('as-done');
     var nodes = Array.prototype.slice.call(sw.childNodes), card = null;
+    var keep = false;
     nodes.forEach(function (n) {
       if (n.nodeType === 3 && !n.textContent.trim()) return;
       if (n.nodeType === 1 && /^(SCRIPT|STYLE)$/.test(n.tagName)) return;
-      if (n.nodeType === 1 && n.tagName === 'H3') card = null;
+      if (n.nodeType === 1) {
+        var nextEl = n.nextElementSibling;
+        if (n.classList.contains('contextual') && nextEl && nextEl.tagName === 'H3') { card = null; keep = true; }
+        else if (n.tagName === 'H3') { if (!keep) card = null; keep = false; }
+        else if (n.tagName === 'DIV' && n.id) { card = null; keep = false; }
+      }
       if (!card) { card = el('div', 'as-card'); sw.insertBefore(card, n); }
       card.appendChild(n);
     });
@@ -498,8 +522,11 @@
   }
 
   /* ---------- 꾸미기: 배지 · 사용자 · 비공개 · 페이지 이동 ---------- */
+  // "이름/회사", "이름 / 회사", "이름(회사)", "이름 (회사)" 형식에서 이름만 꺼냅니다 (표시는 바꾸지 않음)
   function splitName(name) {
-    var s = norm(name), i = s.lastIndexOf('/');
+    var s = norm(name), m = s.match(/^(.+?)\s*\((.+)\)$/);
+    if (m) return [m[1].trim(), m[2].trim()];
+    var i = s.lastIndexOf('/');
     if (i > 0 && i < s.length - 1) return [s.slice(0, i).trim(), s.slice(i + 1).trim()];
     return [s, ''];
   }
@@ -532,12 +559,10 @@
     $$('a.user:not([data-as])', root).forEach(function (a) {
       a.setAttribute('data-as', '1');
       if (a.closest('#top-menu, .flyout-menu, .dropdown-content')) return;
-      var parts = splitName(a.textContent), id = userIdOf(a), isCust = id && cust[id];
-      if (isCust) a.classList.add('as-customer');
-      if (parts[1]) a.innerHTML = esc(parts[0]) + '<span class="as-org">' + esc(parts[1]) + '</span>';
+      var parts = splitName(a.textContent);
       var cell = a.closest('td.assigned_to, td.author, td.last_updated_by');
-      if (cell && !$('.as-av', cell) && !$('img', cell)) {
-        var av = el('span', 'as-av' + (isCust ? ' cust' : ''), esc(parts[0].charAt(0)));
+      if (cell && !$('.as-av', cell) && !$('img, .avatar', cell)) {
+        var av = el('span', 'as-av', esc(parts[0].charAt(0)));
         cell.insertBefore(av, cell.firstChild);
       }
     });
@@ -552,6 +577,134 @@
     });
 
     $$('.pagination ul.pages:not([data-as])', root).forEach(paginationExtras);
+    $$('select:not([data-as-gap])', root).forEach(selectGap);
+  }
+
+  // 선택박스 좌우에 글자나 다른 요소가 바로 붙어 있으면 6px 간격을 둡니다 (이미 공백이 있으면 그대로)
+  function selectGap(sel) {
+    sel.setAttribute('data-as-gap', '1');
+    if (sel.closest('.as-search-pop, .tabular p, td, #filters-table, .flyout-menu')) return;
+    var cs = getComputedStyle(sel);
+    if (cs.display === 'block' || cs.position === 'absolute') return;
+    function needs(node, side) {
+      while (node && node.nodeType === 3 && node.textContent === '') node = side === 'l' ? node.previousSibling : node.nextSibling;
+      if (!node) return false;
+      if (node.nodeType === 3) {
+        var tx = node.textContent;
+        if (!tx.trim()) return false;
+        return side === 'l' ? !/\s$/.test(tx) : !/^\s/.test(tx);
+      }
+      if (node.nodeType !== 1 || node.tagName === 'BR') return false;
+      var d = getComputedStyle(node).display;
+      return d.indexOf('inline') === 0;
+    }
+    if (needs(sel.previousSibling, 'l') && parseFloat(cs.marginLeft) < 6) sel.classList.add('as-gap-l');
+    if (needs(sel.nextSibling, 'r') && parseFloat(cs.marginRight) < 6) sel.classList.add('as-gap-r');
+  }
+
+  /* ---------- 요청 상세: 제목 줄 ---------- */
+  function buildIssueTitle() {
+    if (!D.body.classList.contains('controller-issues') || !D.body.classList.contains('action-show')) return;
+    var content = D.getElementById('content'), h2 = $('#content > h2');
+    if (!content || !h2 || $('.as-titlebar', content)) return;
+    var bar = el('div', 'as-titlebar'), title = el('div', 'as-title');
+    var ctx = $('#content > .contextual');
+    content.insertBefore(bar, h2);
+    title.appendChild(h2);
+    var n = bar.nextSibling;
+    while (n && (n.nodeType === 3 || (n.nodeType === 1 && n.classList.contains('badge')))) {
+      var next = n.nextSibling;
+      if (n.nodeType === 1) title.appendChild(n); else if (!n.textContent.trim()) n.remove(); else break;
+      n = next;
+    }
+    bar.appendChild(title);
+    if (ctx) bar.appendChild(ctx);
+  }
+
+  /* ---------- 요청 편집: '편집'으로 열면 댓글 숨기고 설명 편집기 바로 표시 ---------- */
+  function initIssueEdit() {
+    if (!D.body.classList.contains('controller-issues')) return;
+    function editMode(on) {
+      var upd = D.getElementById('update'); if (!upd) return;
+      upd.classList.toggle('as-edit-mode', on);
+      if (!on) return;
+      var desc = D.getElementById('issue_description_and_toolbar');
+      if (desc && desc.style.display === 'none') {
+        desc.style.display = '';
+        var p = desc.closest('p'), link = p && $('a.icon-edit', p);
+        if (link) link.style.display = 'none';
+      }
+      setTimeout(function () { var ta = D.getElementById('issue_description'); if (ta && upd.classList.contains('as-edit-mode')) ta.focus(); }, 60);
+    }
+    D.addEventListener('click', function (e) {
+      var a = e.target.closest && e.target.closest('a');
+      if (!a) return;
+      if (a.closest('#content > .contextual, .as-titlebar .contextual, #content > div.contextual') && a.classList.contains('icon-edit')) {
+        setTimeout(function () { editMode(true); }, 0);
+      } else if (a.closest('#history, .journal') && (a.classList.contains('icon-comment') || /quote/i.test(a.getAttribute('onclick') || '') || a.getAttribute('data-method') === 'post')) {
+        editMode(false);
+      }
+    }, true);
+    if (D.body.classList.contains('action-edit')) editMode(true);
+  }
+
+  /* ---------- 로그인 ---------- */
+  function buildLogin() {
+    var form = D.getElementById('login-form');
+    if (!form || form.closest('.as-login')) return;
+    var u = D.getElementById('username'), pw = D.getElementById('password');
+    if (u) u.setAttribute('placeholder', t('phLogin'));
+    if (pw) pw.setAttribute('placeholder', t('phPassword'));
+    var wrap = el('div', 'as-login');
+    var art = el('div', 'as-login-art',
+      '<div class="lg">' + LOGO + '<b>ASCII SOFT</b></div>' +
+      '<div><h2>' + t('artTitle') + '</h2><p>' + esc(t('artText')) + '</p></div>' +
+      '<ul>' + t('artTags').map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>');
+    form.parentNode.insertBefore(wrap, form);
+    wrap.appendChild(art); wrap.appendChild(form);
+    hexField(art);
+    var f = $('form', form);
+    if (f) {
+      var head = el('div', '', '<div class="as-login-title">' + esc(t('loginTitle')) + '</div><div class="as-login-sub">' + esc(t('loginSub')) + '</div>');
+      f.insertBefore(head, f.firstChild);
+      // 비밀번호 찾기 링크와 로그인 유지를 한 줄로
+      var lost = $('a.lost_password', form), auto = $('label[for="autologin"]', form);
+      if (lost || auto) {
+        var row = el('div', 'as-login-row');
+        if (auto) row.appendChild(auto); else row.appendChild(el('span'));
+        if (lost) row.appendChild(lost);
+        var submit = D.getElementById('login-submit');
+        f.insertBefore(row, submit);
+      }
+    }
+  }
+
+  /* ---------- 홈: 시작 패널 ---------- */
+  function buildWelcome() {
+    if (!D.body.classList.contains('controller-welcome')) return;
+    var content = D.getElementById('content');
+    if (!content || $('.as-welcome', content) || !(CTX.user && CTX.user.logged) && !$('#account .user-name')) return;
+    var base = CTX.base || '';
+    var name = splitName((CTX.user && CTX.user.name) || norm(($('#account .user-name') || {}).textContent))[0];
+    var box = el('div', 'as-welcome', '<h3>' + esc(t('hello')(name)) + '</h3><p>' + esc(t('helloSub')) + '</p><div class="as-quick"></div>');
+    var q = $('.as-quick', box);
+    [['home', 'qMy', '/my/page'], ['folder', 'qProjects', '/projects'], ['list', 'qIssues', '/issues'], ['search', 'qSearch', '/search']].forEach(function (it) {
+      var a = el('a', '', '<i>' + svg(it[0]) + '</i><div><b>' + esc(t(it[1])[0]) + '</b><br><span>' + esc(t(it[1])[1]) + '</span></div>');
+      a.href = base + it[2]; q.appendChild(a);
+    });
+    var h2 = $('#content > h2');
+    content.insertBefore(box, h2 ? h2.nextSibling : content.firstChild);
+    hexField(box);
+  }
+
+  /* ---------- 내 페이지: '추가:' 콜론 제거 ---------- */
+  function fixMyPage() {
+    var label = $('label[for="block-select"]');
+    if (!label) return;
+    var n = label.nextSibling;
+    if (n && n.nodeType === 3) n.textContent = n.textContent.replace(/^\s*:\s*/, '');
+    var sel = D.getElementById('block-select');
+    if (sel) sel.classList.add('as-gap-l');
   }
 
   function paginationExtras(ul) {

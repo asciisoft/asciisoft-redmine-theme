@@ -1,5 +1,5 @@
 /*
- * ASCII SOFT Redmine Theme 1.2.0 — theme.js
+ * ASCII SOFT Redmine Theme 1.3.0 — theme.js
  * 플러그인(asciisoft_portal)이 있으면 알림 · 프로젝트 헤더 · 통계 · 화면 모드 저장을 사용하고,
  * 없으면 화면 꾸미기만 동작합니다. 외부 라이브러리 없이 동작합니다(레드마인 기본 jQuery만 선택적으로 사용).
  */
@@ -24,7 +24,7 @@
       empty: '새 알림이 없습니다', all: '전체', filters: '검색조건', mode: '화면 모드', editHeader: '헤더 설정',
       sNew: '신규', sProgress: '진행', sOverdue: '지연', sPercent: '전체 진척도', byStatus: '상태별',
       private: '비공개', first: '처음', last: '끝', close: '닫기', today: '오늘', tomorrow: '내일',
-      phLogin: '계정', phPassword: '비밀번호', showPw: '비밀번호 보기', loginTitle: '로그인', loginSub: '계정 정보를 입력해 주세요',
+      phLogin: '계정', phPassword: '비밀번호', showPw: '비밀번호 보기', ovDesc: '프로젝트 설명', reply: '댓글달기', loginTitle: '로그인', loginSub: '계정 정보를 입력해 주세요',
       artTitle: '요청부터 완료까지,<br>한 곳에서 함께 봅니다', artText: '요청 등록, 진행 상황, 문서와 일정을 고객사와 함께 확인하는 프로젝트센터입니다.',
       artTags: ['요청 관리', '진행 현황', '문서 · 위키', '일정'],
       hello: function (n) { return (n ? n + '님, ' : '') + '반갑습니다'; }, helloSub: '자주 쓰는 메뉴에서 바로 시작해 보세요.',
@@ -45,7 +45,7 @@
       empty: 'No new notifications', all: 'All', filters: 'Filters', mode: 'Color mode', editHeader: 'Header settings',
       sNew: 'New', sProgress: 'In progress', sOverdue: 'Overdue', sPercent: 'Progress', byStatus: 'By status',
       private: 'Private', first: 'First', last: 'Last', close: 'Close', today: 'today', tomorrow: 'tomorrow',
-      phLogin: 'Login', phPassword: 'Password', showPw: 'Show password', loginTitle: 'Sign in', loginSub: 'Enter your account details',
+      phLogin: 'Login', phPassword: 'Password', showPw: 'Show password', ovDesc: 'Description', reply: 'Reply', loginTitle: 'Sign in', loginSub: 'Enter your account details',
       artTitle: 'From request to done,<br>all in one place', artText: 'A project center to share requests, progress, documents and schedules with your clients.',
       artTags: ['Requests', 'Progress', 'Docs · Wiki', 'Schedule'],
       hello: function (n) { return 'Welcome' + (n ? ', ' + n : ''); }, helloSub: 'Start from your most-used menus.',
@@ -102,6 +102,7 @@
     home: '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
     list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+    reply: '<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
     eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
   };
   function svg(name, w) {
@@ -154,6 +155,8 @@
     safe(buildProjectCards);
     safe(issueReadonlyStatus);
     safe(watchQueryForm);
+    safe(buildOverview);
+    safe(watchNewsEdit);
     safe(function () { decorate(D); });
     safe(buildToasts);
     safe(initNotifications);
@@ -319,7 +322,18 @@
       edit.href = p.settings_url; edit.title = t('editHeader');
       top.appendChild(edit);
     }
-    if (top.childNodes.length) header.insertBefore(top, h1);
+    var bc = $('.breadcrumbs', h1);
+    if (bc && norm(bc.textContent)) top.appendChild(bc);
+    var main = el('div', 'as-hero-main');
+    header.insertBefore(main, h1);
+    if (top.childNodes.length) main.appendChild(top);
+    main.appendChild(h1);
+    if (p.sub_title) h1.appendChild(el('span', 'as-sub-title', esc(p.sub_title)));
+    if (p.logo) {
+      var lg = el('a', 'as-hero-logo', '<img alt="" src="' + esc(p.logo) + '">');
+      lg.href = (CTX.base || '') + '/projects/' + encodeURIComponent(p.identifier);
+      header.insertBefore(lg, main);
+    }
 
     if (p.bg === 'image' && p.image) {
       header.classList.add('as-hero-image');
@@ -591,6 +605,15 @@
 
     $$('.pagination ul.pages:not([data-as])', root).forEach(paginationExtras);
     $$('select:not([data-as-gap])', root).forEach(selectGap);
+    $$('div.journal .journal-actions a.icon-comment:not([data-as])', root).forEach(function (a) {
+      a.setAttribute('data-as', '1');
+      var sv = $('svg', a);
+      if (sv) sv.outerHTML = svg('reply');
+      if (!a.title) a.title = t('reply');
+    });
+    $$('.members.box a.user:not([data-as-initial])', root).forEach(function (a) {
+      a.setAttribute('data-as-initial', splitName(a.textContent)[0].charAt(0));
+    });
   }
 
   // 선택박스 좌우에 글자나 다른 요소가 바로 붙어 있으면 6px 간격을 둡니다 (이미 공백이 있으면 그대로)
@@ -696,6 +719,46 @@
       f.insertBefore(row, submit && submit.parentNode === f ? submit : null);
     }
     if (u && !u.value) setTimeout(function () { u.focus(); }, 50);
+  }
+
+  /* ---------- 프로젝트 개요: 설명과 위젯을 같은 카드 격자로 ---------- */
+  function buildOverview() {
+    var b = D.body.classList;
+    if (!b.contains('controller-projects') || !b.contains('action-show')) return;
+    var split = $('#content > .splitcontent');
+    if (!split || $('.as-ov-grid')) return;
+    var left = $('.splitcontentleft', split), right = $('.splitcontentright', split);
+    var grid = el('div', 'as-ov-grid');
+    var L = [], R = [];
+    if (left) {
+      var desc = null;
+      Array.prototype.slice.call(left.children).forEach(function (c) {
+        if (c.classList.contains('wiki') && !desc) {
+          desc = el('div', 'box as-ov-desc', '<h3>' + svg('list') + esc(t('ovDesc')) + '</h3>');
+          desc.appendChild(c); L.push(desc);
+        } else if (c.tagName === 'UL' && !c.classList.contains('as-keep')) {
+          c.remove();               // 홈페이지 주소 · 사용자 정의 필드 목록은 표시하지 않음
+        } else if (c.nodeType === 1) {
+          L.push(c);
+        }
+      });
+    }
+    if (right) Array.prototype.slice.call(right.children).forEach(function (c) { R.push(c); });
+    for (var i = 0; i < Math.max(L.length, R.length); i++) {
+      if (L[i]) grid.appendChild(L[i]);
+      if (R[i]) grid.appendChild(R[i]);
+    }
+    split.parentNode.insertBefore(grid, split);
+    split.remove();
+  }
+
+  /* ---------- 뉴스: 편집 중이면 본문 · 댓글 숨김 ---------- */
+  function watchNewsEdit() {
+    var ed = D.getElementById('edit-news');
+    if (!ed || !W.MutationObserver) return;
+    function sync() { D.body.classList.toggle('as-news-editing', ed.style.display !== 'none' && getComputedStyle(ed).display !== 'none'); }
+    new MutationObserver(sync).observe(ed, { attributes: true, attributeFilter: ['style', 'class'] });
+    sync();
   }
 
   /* ---------- 하단: 회사 정보 (홈페이지와 동일) ---------- */

@@ -1,5 +1,5 @@
 /*
- * ASCII SOFT Redmine Theme 1.3.0 (Redmine 7.0)
+ * ASCII SOFT Redmine Theme 1.4.0 (Redmine 7.0)
  * - 기본 스타일을 불러온 뒤 덮어쓰는 방식입니다. 테마를 해제하면 원래 화면으로 돌아옵니다.
  * - 화면 모드: html[data-as-mode] = light | white | gray | dark | blue | sunset | green | purple | orange | pink
  */
@@ -1615,6 +1615,161 @@ body.as-news-editing #content > :not(#edit-news):not(h2):not(.contextual):not(.a
 /* --- 편집기 안으로 폼 여백이 새지 않게 (WYSIWYG 편집기 사용 시) --- */
 .tabular .toastui-editor-contents p, .tabular .ProseMirror p { padding: 0 !important; min-block-size: 0 !important; display: block !important; }
 
+/* ============================================================
+   15. 1.4 수정분
+   ============================================================ */
+/* --- 체크박스 · 라디오: 기본 입력칸 스타일이 덧씌워지지 않게 --- */
+input[type="checkbox"], input[type="radio"] {
+  border: 0 !important; background: none !important; box-shadow: none !important; padding: 0 !important;
+  inline-size: 15px; block-size: 15px; border-radius: 3px; vertical-align: middle;
+}
+input[type="checkbox"]:focus, input[type="radio"]:focus { box-shadow: none !important; outline: none; }
+input[type="checkbox"]:focus-visible, input[type="radio"]:focus-visible { outline: 2px solid var(--as-a2); outline-offset: 2px; }
+
+/* --- 로그인 placeholder 한 단계 작게 --- */
+.as-login1 #login-form input#username::placeholder, .as-login1 #login-form input#password::placeholder { font-size: 13.5px; }
+
+/* --- 브라우저 스크롤바 --- */
+html { scrollbar-color: color-mix(in srgb, var(--as-a2) 45%, transparent) transparent; scrollbar-width: thin; }
+::-webkit-scrollbar { inline-size: 10px; block-size: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: color-mix(in srgb, var(--as-a2) 40%, transparent); border-radius: 999px; border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-thumb:hover { background: color-mix(in srgb, var(--as-a2) 70%, transparent); border: 2px solid transparent; background-clip: padding-box; }
+::-webkit-scrollbar-corner { background: transparent; }
+
+/* --- 상단: 글자 1px 크게 · 메뉴 선택 강조 --- */
+.as-brand small { font-size: 13px; }
+nav.top-menu #main-menu li a, .top-menu__links a, .top-menu__links a:link, .top-menu__links a:visited { font-size: 15px; }
+.top-menu__links li { display: flex; align-items: center; }
+.top-menu__links ul > li + li::before { content: ""; inline-size: 1px; block-size: 11px; background: var(--as-line2); margin: 0 2px; }
+nav.top-menu .general-menu .top-menu__links a { color: #3b4763; position: relative; }
+nav.top-menu .general-menu .top-menu__links a.selected, nav.top-menu .general-menu .top-menu__links a.as-current {
+  color: var(--as-a3); font-weight: 700; background: transparent;
+}
+nav.top-menu .general-menu .top-menu__links a.selected::after, nav.top-menu .general-menu .top-menu__links a.as-current::after {
+  content: ""; position: absolute; inset-inline: 10px; inset-block-end: -13px; block-size: 3px; border-radius: 3px 3px 0 0; background: var(--as-grad); box-shadow: 0 0 12px var(--as-glow);
+}
+nav.top-menu .general-menu .top-menu__links a.help, .as-apps-pop a.help { display: none !important; }
+nav.top-menu .general-menu .top-menu__links li:has(> a.help) { display: none !important; }
+
+/* --- 탭 (설정 · 사용자 등 모든 화면) --- */
+#content div.tabs:not(.jstTabs) ul { display: inline-flex !important; inline-size: auto !important; border: 0 !important; margin: 0; }
+#content div.tabs:not(.jstTabs) ul li { float: none; display: block; }
+#content div.tabs:not(.jstTabs) ul li a {
+  border: 0 !important; background: transparent !important; margin: 0 !important; display: inline-block; block-size: auto;
+}
+#content div.tabs:not(.jstTabs) ul li a.selected { background: var(--as-surface) !important; }
+#content div.tabs:not(.jstTabs) .tabs-buttons { display: none !important; }
+
+/* --- 검색 팝업: 프로젝트 선택 --- */
+.as-search-pop #project-jump .drdn-trigger {
+  display: flex; align-items: center; padding: 0 34px 0 12px; border: 1px solid var(--as-line2); background: var(--as-surface);
+  color: var(--as-text); font-size: .8125rem; position: relative; cursor: pointer; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.as-search-pop #project-jump .drdn-trigger::after {
+  content: ""; position: absolute; inset-inline-end: 14px; inset-block-start: 50%; inline-size: 7px; block-size: 7px; margin-block-start: -6px;
+  border-inline-end: 2px solid var(--as-dim); border-block-end: 2px solid var(--as-dim); transform: rotate(45deg);
+}
+.as-search-pop #project-jump .drdn-trigger:hover { border-color: var(--as-a2); }
+.as-search-pop #project-jump .drdn-content { inline-size: 100%; inset-inline-start: 0; border-radius: 12px; margin-block-start: 6px; }
+.as-search-pop #project-jump .drdn-content .quick-search input { inline-size: 100%; box-sizing: border-box; }
+
+/* --- 우선순위 색 --- */
+.as-pr[data-k="normal"] { color: #2e5392; font-weight: 600; }
+.as-pr[data-k="normal"]::before { background: #4f7cc8; }
+.as-pr[data-k="low"] { color: #5a6478; font-weight: 500; }
+.as-pr[data-k="low"]::before { background: #8a94a6; }
+html[data-as-mode="dark"] .as-pr[data-k="normal"] { color: #9dc1ff; }
+html[data-as-mode="dark"] .as-pr[data-k="low"] { color: #b3bccd; }
+
+/* --- 요청 폼: 왼쪽으로 · 같은 기준선 --- */
+#all_attributes .tabular p, #issue-form .tabular p, #all_attributes p, .tabular#all_attributes p { padding-inline-start: 96px; }
+#all_attributes .tabular label, #issue-form .tabular label, #all_attributes p > label, #all_attributes label.as-fl {
+  margin-inline-start: -96px; inline-size: 88px; padding-inline-end: 0;
+}
+#all_attributes .splitcontentright p { padding-inline-start: 96px; }
+#all_attributes p > input:not([type="checkbox"]):not([type="radio"]), #all_attributes p > select, #all_attributes p > textarea,
+#all_attributes p > span > input, #all_attributes p > .asciisoft-editor, #all_attributes p > .jstBlock, #all_attributes p > span.attachments_form,
+#issue-form .box.tabular > p > input, #issue-form .box.tabular > p > select { margin-inline-start: 0 !important; vertical-align: middle; }
+#all_attributes .asciisoft-editor, #issue-form .asciisoft-editor { margin-inline-start: 0 !important; max-inline-size: 100% !important; box-sizing: border-box; }
+#issue_status_id, #issue_priority_id, #issue_assigned_to_id { inline-size: 150px !important; min-inline-size: 0 !important; max-inline-size: 150px; }
+#all_attributes p.as-ro { display: block !important; }
+#all_attributes p.as-ro > .as-st { vertical-align: middle; margin-block-start: 6px; }
+fieldset.tabular > legend, #issue-form fieldset > legend { font-size: .8125rem; }
+
+/* 비공개: 버튼형 토글 */
+#issue_is_private_wrap {
+  float: none !important; display: inline-flex !important; align-items: center; margin: 0 0 0 10px !important; padding: 0 !important; min-block-size: 0 !important;
+  vertical-align: middle; position: static !important;
+}
+#issue_is_private_wrap input[type="checkbox"] { position: absolute; opacity: 0; inline-size: 1px; block-size: 1px; pointer-events: none; }
+#issue_is_private_wrap label, #issue_is_private_label {
+  display: inline-flex !important; align-items: center; gap: 6px; margin: 0 !important; inline-size: auto !important; float: none !important;
+  padding: 0 14px 0 12px; block-size: 32px; line-height: 32px; border-radius: 10px; cursor: pointer; letter-spacing: 1.5px;
+  border: 1px solid var(--as-line2); background: var(--as-surface); color: var(--as-text) !important; font-weight: 700; font-size: .78rem; text-align: start;
+  transition: background .2s, color .2s, border-color .2s;
+}
+#issue_is_private_wrap label::before, #issue_is_private_label::before {
+  content: ""; inline-size: 13px; block-size: 13px; background: currentColor;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Crect x='4' y='11' width='16' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center/contain no-repeat;
+          mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round'%3E%3Crect x='4' y='11' width='16' height='10' rx='2'/%3E%3Cpath d='M8 11V7a4 4 0 0 1 8 0v4'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+#issue_is_private_wrap:has(input:checked) label, #issue_is_private_wrap.on label { background: var(--as-ink); border-color: var(--as-ink); color: #fff !important; }
+html[data-as-mode="dark"] #issue_is_private_wrap:has(input:checked) label { background: var(--as-a2); border-color: var(--as-a2); }
+#issue_is_private_wrap input:focus-visible + label { outline: 2px solid var(--as-a2); outline-offset: 2px; }
+
+/* --- 요청 상세: 프로필 동그라미 · 제목 정렬 --- */
+div.issue .gravatar-with-child, div.issue > .avatar, div.issue img.gravatar, div.issue .avatar, div.issue .avatar img { border-radius: 50% !important; }
+div.issue .gravatar-with-child { margin-block-start: 0; }
+div.issue div.subject { padding-block-start: 2px; }
+div.issue div.subject h3 { margin: 0 0 4px !important; line-height: 1.25; }
+div.issue p.author { margin-block-start: 0; line-height: 1.4; }
+.as-titlebar .as-title { align-items: center; }
+.as-titlebar .as-title h2 { display: inline-flex; align-items: center; line-height: 1.25 !important; }
+.as-titlebar .badge { margin: 0 !important; position: static !important; inset: auto !important; transform: none !important; align-self: center; line-height: 1.5 !important; }
+#history .journal .avatar, #history .journal img.gravatar, .journal-header .avatar { border-radius: 50% !important; }
+
+/* --- 요청 보고서 --- */
+body.controller-reports #content h3, body.controller-reports #content h3 a { font-size: .9375rem; font-weight: 800; color: var(--as-text); }
+body.controller-reports .splitcontentleft, body.controller-reports .splitcontentright { padding: 0 8px 0 0; }
+table.list.issue-report {
+  background: var(--as-surface); border: 1px solid var(--as-line) !important; border-radius: var(--as-r); border-collapse: separate; border-spacing: 0;
+  overflow: hidden; box-shadow: var(--as-shadow-sm); margin-block-end: 18px;
+}
+table.list.issue-report th { background: var(--as-surface2); color: var(--as-muted); font-size: .72rem; font-weight: 700; padding: 9px 8px; }
+table.list.issue-report td { padding: 8px; font-variant-numeric: tabular-nums; }
+table.list.issue-report td.name, table.list.issue-report th:first-child { text-align: start !important; padding-inline-start: 14px; }
+table.list.issue-report td.name a { font-weight: 600; color: var(--as-text); }
+table.list.issue-report td:not(.name) a {
+  display: inline-block; min-inline-size: 26px; padding: 1px 8px; border-radius: 999px; background: var(--as-tint); color: var(--as-a3); font-weight: 700;
+}
+table.list.issue-report td.total a, table.list.issue-report tr.total td a { background: var(--as-grad); color: #fff; }
+table.list.issue-report tr.total td { font-weight: 800; background: var(--as-surface2); }
+.as-rep-bar { display: block; block-size: 4px; border-radius: 4px; background: var(--as-grad); margin-block-start: 5px; opacity: .85; }
+body.controller-reports .contextual a { font-size: .75rem; }
+
+/* --- 프로젝트 헤더: 로고 각진 사각형 · 부제목 글꼴 --- */
+.as-hero-logo img { border-radius: 0 !important; box-shadow: none; }
+.as-sub-title { font-family: inherit; letter-spacing: -.03em; font-weight: 700; font-size: 1rem; color: var(--as-dim); }
+
+/* --- 검색 화면 --- */
+fieldset.collapsible.collapsed > legend { background: var(--as-tint) !important; color: var(--as-a3) !important; }
+#search-form label:has(> input[type="checkbox"]), #search-form label:has(> input[type="radio"]) { margin-inline-start: 10px; }
+#search-form select + label, #search-form select + input + label { margin-inline-start: 12px !important; }
+
+/* --- 뉴스 목록: 본문을 제목과 같은 위치로 --- */
+#content article.news-article .wiki { padding-inline-start: 42px !important; margin-inline-start: 0 !important; }
+#content article.news-article .wiki > *:first-child { margin-block-start: 0; }
+#content article.news-article .wiki blockquote { margin-inline: 0; }
+#content article.news-article .wiki > p, #content article.news-article .wiki > div { margin-inline-start: 0; padding-inline-start: 0; }
+
+/* --- 댓글달기 · 좋아요 아이콘 --- */
+.reaction-button { display: inline-flex !important; align-items: center; gap: 4px; padding: 3px 9px; border-radius: 999px; color: var(--as-dim) !important; font-size: .75rem; font-weight: 700; text-decoration: none !important; transition: background .2s, color .2s; }
+.reaction-button:hover:not(.readonly) { background: rgba(239, 68, 68, .08); color: #e5484d !important; }
+.reaction-button svg { inline-size: 15px; block-size: 15px; }
+.reaction-button.reacted { color: #e5484d !important; background: rgba(239, 68, 68, .08); }
+.reaction-button.reacted svg path { fill: currentColor; }
+
 /* 인쇄 */
 @media print {
   nav.top-menu, .as-toasts, .as-hex, .as-stats, .as-toolbar { display: none !important; }
@@ -1626,3 +1781,4 @@ body.as-news-editing #content > :not(#edit-news):not(h2):not(.contextual):not(.a
 .as-login1 .as-field input { margin: 0 !important; }
 .as-login1 .as-login-row input[type="checkbox"] { margin: 0 !important; vertical-align: middle; }
 .as-login1 #login-form form > br, .as-login1 #login-form form > label:empty { display: none; }
+body.controller-issues.action-edit #add_notes, body.controller-issues.action-update #add_notes { display: none; }

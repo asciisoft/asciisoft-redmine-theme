@@ -1,5 +1,5 @@
 /*
- * ASCII SOFT Redmine Theme 1.3.0 — theme.js
+ * ASCII SOFT Redmine Theme 1.4.0 — theme.js
  * 플러그인(asciisoft_portal)이 있으면 알림 · 프로젝트 헤더 · 통계 · 화면 모드 저장을 사용하고,
  * 없으면 화면 꾸미기만 동작합니다. 외부 라이브러리 없이 동작합니다(레드마인 기본 jQuery만 선택적으로 사용).
  */
@@ -20,7 +20,7 @@
   var LANG = 'ko';
   var I18N = {
     ko: {
-      center: '프로젝트센터', search: '검색', menu: '전체 메뉴', notifications: '알림', allRead: '모두 읽음',
+      center: '프로젝트 센터', search: '검색', menu: '전체 메뉴', notifications: '알림', allRead: '모두 읽음',
       empty: '새 알림이 없습니다', all: '전체', filters: '검색조건', mode: '화면 모드', editHeader: '헤더 설정',
       sNew: '신규', sProgress: '진행', sOverdue: '지연', sPercent: '전체 진척도', byStatus: '상태별',
       private: '비공개', first: '처음', last: '끝', close: '닫기', today: '오늘', tomorrow: '내일',
@@ -102,6 +102,7 @@
     home: '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
     list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+    heart: '<path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 6.9 4.5c2 0 3.4 1.1 4.1 2.3.7-1.2 2.1-2.3 4.1-2.3 3.5 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/>',
     reply: '<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
     eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
   };
@@ -156,6 +157,11 @@
     safe(issueReadonlyStatus);
     safe(watchQueryForm);
     safe(buildOverview);
+    safe(markTopMenu);
+    safe(cleanWelcome);
+    safe(movePrivate);
+    safe(issueEditLinks);
+    safe(watchContent);
     safe(watchNewsEdit);
     safe(function () { decorate(D); });
     safe(buildToasts);
@@ -605,11 +611,16 @@
 
     $$('.pagination ul.pages:not([data-as])', root).forEach(paginationExtras);
     $$('select:not([data-as-gap])', root).forEach(selectGap);
-    $$('div.journal .journal-actions a.icon-comment:not([data-as])', root).forEach(function (a) {
+    $$('div.journal .journal-actions a.icon-comment:not([data-as]), div.journal .journal-actions a.icon-quote:not([data-as]), #content a.icon-quote:not([data-as])', root).forEach(function (a) {
       a.setAttribute('data-as', '1');
       var sv = $('svg', a);
       if (sv) sv.outerHTML = svg('reply');
       if (!a.title) a.title = t('reply');
+    });
+    $$('.reaction-button:not([data-as])', root).forEach(function (b) {
+      b.setAttribute('data-as', '1');
+      var sv = $('svg', b);
+      if (sv) sv.outerHTML = svg('heart');
     });
     $$('.members.box a.user:not([data-as-initial])', root).forEach(function (a) {
       a.setAttribute('data-as-initial', splitName(a.textContent)[0].charAt(0));
@@ -662,7 +673,7 @@
   function initIssueEdit() {
     if (!D.body.classList.contains('controller-issues')) return;
     function editMode(on) {
-      var upd = D.getElementById('update'); if (!upd) return;
+      var upd = D.getElementById('update') || D.getElementById('issue-form'); if (!upd) return;
       upd.classList.toggle('as-edit-mode', on);
       if (!on) return;
       var desc = D.getElementById('issue_description_and_toolbar');
@@ -678,7 +689,7 @@
       if (!a) return;
       if (a.closest('#content > .contextual, .as-titlebar .contextual, #content > div.contextual') && a.classList.contains('icon-edit')) {
         setTimeout(function () { editMode(true); }, 0);
-      } else if (a.closest('#history, .journal') && (a.classList.contains('icon-comment') || /quote/i.test(a.getAttribute('onclick') || '') || a.getAttribute('data-method') === 'post')) {
+      } else if (a.closest('#history, .journal') && (a.classList.contains('icon-comment') || a.classList.contains('icon-quote') || /quote/i.test(a.getAttribute('onclick') || '') || a.getAttribute('data-method') === 'post')) {
         editMode(false);
       }
     }, true);
@@ -759,6 +770,60 @@
     function sync() { D.body.classList.toggle('as-news-editing', ed.style.display !== 'none' && getComputedStyle(ed).display !== 'none'); }
     new MutationObserver(sync).observe(ed, { attributes: true, attributeFilter: ['style', 'class'] });
     sync();
+  }
+
+  /* ---------- 상단 전체 메뉴: 현재 위치 강조 ---------- */
+  function markTopMenu() {
+    var base = CTX.base || '', path = W.location.pathname.replace(/\/+$/, '') || '/';
+    if (base && path.indexOf(base) === 0) path = path.slice(base.length) || '/';
+    var b = D.body.classList;
+    $$('nav.top-menu .general-menu .top-menu__links a').forEach(function (a) {
+      var on = (a.classList.contains('home') && (path === '/' || b.contains('controller-welcome'))) ||
+               (a.classList.contains('my-page') && /^\/my(\/page)?$/.test(path)) ||
+               (a.classList.contains('projects') && path === '/projects') ||
+               (a.classList.contains('administration') && path.indexOf('/admin') === 0);
+      a.classList.toggle('as-current', !!on);
+    });
+  }
+
+  /* ---------- 메인화면: 사이트 제목만 적힌 환영 문구 제거 ---------- */
+  function cleanWelcome() {
+    if (!D.body.classList.contains('controller-welcome')) return;
+    var title = norm(($('#header h1') || {}).textContent).toLowerCase();
+    $$('#content .wiki').forEach(function (w) {
+      var tx = norm(w.textContent).toLowerCase();
+      if (tx && (tx === title || tx === norm(D.title).toLowerCase())) w.remove();
+    });
+  }
+
+  /* ---------- 요청 폼: 비공개 버튼을 유형 옆으로 ---------- */
+  function movePrivate() {
+    var wrap = D.getElementById('issue_is_private_wrap'), tr = D.getElementById('issue_tracker_id');
+    if (!wrap || !tr || wrap.previousElementSibling === tr) return;
+    tr.parentNode.insertBefore(wrap, tr.nextSibling);
+  }
+
+  /* ---------- 요청 상세의 '편집'은 편집 페이지(/issues/N/edit)로 이동 ---------- */
+  function issueEditLinks() {
+    var b = D.body.classList;
+    if (!b.contains('controller-issues') || !b.contains('action-show')) return;
+    $$('#content .contextual a.icon-edit').forEach(function (a) {
+      var href = a.getAttribute('href') || '';
+      if (!/\/issues\/\d+\/edit/.test(href)) return;
+      a.removeAttribute('onclick');
+      a.addEventListener('click', function (e) { e.preventDefault(); e.stopImmediatePropagation(); W.location.href = href; }, true);
+    });
+  }
+
+  /* ---------- 화면 일부가 다시 그려질 때(좋아요 등) 꾸미기 다시 적용 ---------- */
+  function watchContent() {
+    var c = D.getElementById('content');
+    if (!c || !W.MutationObserver) return;
+    var tm;
+    new MutationObserver(function () {
+      clearTimeout(tm);
+      tm = setTimeout(function () { safe(function () { decorate(c); movePrivate(); }); }, 60);
+    }).observe(c, { childList: true, subtree: true });
   }
 
   /* ---------- 하단: 회사 정보 (홈페이지와 동일) ---------- */

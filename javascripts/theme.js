@@ -1,5 +1,5 @@
 /*
- * ASCII SOFT Redmine Theme 1.1.0 — theme.js
+ * ASCII SOFT Redmine Theme 1.2.0 — theme.js
  * 플러그인(asciisoft_portal)이 있으면 알림 · 프로젝트 헤더 · 통계 · 화면 모드 저장을 사용하고,
  * 없으면 화면 꾸미기만 동작합니다. 외부 라이브러리 없이 동작합니다(레드마인 기본 jQuery만 선택적으로 사용).
  */
@@ -7,7 +7,7 @@
   'use strict';
 
   var D = document, H = D.documentElement, W = window;
-  var MODES = ['light', 'gray', 'dark', 'blue', 'sunset', 'green', 'purple', 'orange', 'pink'];
+  var MODES = ['light', 'white', 'gray', 'dark', 'blue', 'sunset', 'green', 'purple', 'orange', 'pink'];
 
   /* 화면 모드: 깜빡임을 막기 위해 head 단계에서 먼저 적용 */
   try {
@@ -24,7 +24,7 @@
       empty: '새 알림이 없습니다', all: '전체', filters: '검색조건', mode: '화면 모드', editHeader: '헤더 설정',
       sNew: '신규', sProgress: '진행', sOverdue: '지연', sPercent: '전체 진척도', byStatus: '상태별',
       private: '비공개', first: '처음', last: '끝', close: '닫기', today: '오늘', tomorrow: '내일',
-      phLogin: '계정', phPassword: '패스워드', loginTitle: '로그인', loginSub: '계정 정보를 입력해 주세요',
+      phLogin: '계정', phPassword: '비밀번호', showPw: '비밀번호 보기', loginTitle: '로그인', loginSub: '계정 정보를 입력해 주세요',
       artTitle: '요청부터 완료까지,<br>한 곳에서 함께 봅니다', artText: '요청 등록, 진행 상황, 문서와 일정을 고객사와 함께 확인하는 프로젝트센터입니다.',
       artTags: ['요청 관리', '진행 현황', '문서 · 위키', '일정'],
       hello: function (n) { return (n ? n + '님, ' : '') + '반갑습니다'; }, helloSub: '자주 쓰는 메뉴에서 바로 시작해 보세요.',
@@ -38,14 +38,14 @@
         if (s < 60) return '방금 전'; if (s < 3600) return Math.floor(s / 60) + '분 전';
         if (s < 86400) return Math.floor(s / 3600) + '시간 전'; return Math.floor(s / 86400) + '일 전';
       },
-      modes: { light: '라이트', gray: '그레이', dark: '다크', blue: '블루', sunset: '노을 레드', green: '그린', purple: '퍼플', orange: '오렌지', pink: '핑크' }
+      modes: { light: '라이트', white: '화이트', gray: '그레이', dark: '다크', blue: '블루', sunset: '노을 레드', green: '그린', purple: '퍼플', orange: '오렌지', pink: '핑크' }
     },
     en: {
       center: 'Project Center', search: 'Search', menu: 'Menu', notifications: 'Notifications', allRead: 'All read',
       empty: 'No new notifications', all: 'All', filters: 'Filters', mode: 'Color mode', editHeader: 'Header settings',
       sNew: 'New', sProgress: 'In progress', sOverdue: 'Overdue', sPercent: 'Progress', byStatus: 'By status',
       private: 'Private', first: 'First', last: 'Last', close: 'Close', today: 'today', tomorrow: 'tomorrow',
-      phLogin: 'Login', phPassword: 'Password', loginTitle: 'Sign in', loginSub: 'Enter your account details',
+      phLogin: 'Login', phPassword: 'Password', showPw: 'Show password', loginTitle: 'Sign in', loginSub: 'Enter your account details',
       artTitle: 'From request to done,<br>all in one place', artText: 'A project center to share requests, progress, documents and schedules with your clients.',
       artTags: ['Requests', 'Progress', 'Docs · Wiki', 'Schedule'],
       hello: function (n) { return 'Welcome' + (n ? ', ' + n : ''); }, helloSub: 'Start from your most-used menus.',
@@ -59,7 +59,7 @@
         if (s < 60) return 'just now'; if (s < 3600) return Math.floor(s / 60) + 'm ago';
         if (s < 86400) return Math.floor(s / 3600) + 'h ago'; return Math.floor(s / 86400) + 'd ago';
       },
-      modes: { light: 'Light', gray: 'Gray', dark: 'Dark', blue: 'Blue', sunset: 'Sunset', green: 'Green', purple: 'Purple', orange: 'Orange', pink: 'Pink' }
+      modes: { light: 'Light', white: 'White', gray: 'Gray', dark: 'Dark', blue: 'Blue', sunset: 'Sunset', green: 'Green', purple: 'Purple', orange: 'Orange', pink: 'Pink' }
     }
   };
   function t(k) { return (I18N[LANG] || I18N.ko)[k]; }
@@ -78,7 +78,7 @@
     '기타 요청': 'etc', '기타': 'etc', '문의': 'question', 'bug': 'bug', 'feature': 'feature', 'support': 'question'
   };
   var MODE_SWATCH = {
-    light: 'linear-gradient(135deg,#f4f7fd 50%,#4f7cc8 50%)', gray: 'linear-gradient(135deg,#f3f4f6 50%,#4b5563 50%)',
+    light: 'linear-gradient(135deg,#f4f7fd 50%,#4f7cc8 50%)', white: 'linear-gradient(135deg,#ffffff 50%,#9dc1ff 50%)', gray: 'linear-gradient(135deg,#f3f4f6 50%,#4b5563 50%)',
     dark: 'linear-gradient(135deg,#0b1222 50%,#6a9cf5 50%)', blue: 'linear-gradient(135deg,#e5efff 50%,#6b9cf0 50%)',
     sunset: 'linear-gradient(135deg,#ffece6 50%,#f0766a 50%)', green: 'linear-gradient(135deg,#e4f5ec 50%,#4fb487 50%)',
     purple: 'linear-gradient(135deg,#eee8ff 50%,#9478e3 50%)', orange: 'linear-gradient(135deg,#ffefdf 50%,#f59e4c 50%)',
@@ -101,7 +101,8 @@
     clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     home: '<path d="m3 10 9-7 9 7v10a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/>',
     folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
-    list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>'
+    list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
+    eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
   };
   function svg(name, w) {
     return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="' + (w || 2) +
@@ -149,6 +150,10 @@
     safe(buildLogin);
     safe(buildWelcome);
     safe(fixMyPage);
+    safe(buildFooter);
+    safe(buildProjectCards);
+    safe(issueReadonlyStatus);
+    safe(watchQueryForm);
     safe(function () { decorate(D); });
     safe(buildToasts);
     safe(initNotifications);
@@ -253,7 +258,9 @@
     var links = general && $('.top-menu__links ul', general);
     if (menu && links) {
       var apps = el('div', 'as-pop as-apps-pop');
-      apps.appendChild(links.cloneNode(true));
+      var cl = links.cloneNode(true);
+      $$('a.help', cl).forEach(function (a) { var li = a.closest('li'); (li || a).remove(); });
+      apps.appendChild(cl);
       actions.appendChild(popButton('apps', t('menu'), '', apps).wrap);
     }
 
@@ -270,7 +277,8 @@
     var account = D.getElementById('account');
     var trigger = account && $('.dropdown-trigger', account);
     var uname = (CTX.user && CTX.user.name) || norm(($('.user-info .user-name', account || D) || {}).textContent);
-    if (trigger && uname) {
+    var anon = (CTX.user && CTX.user.logged === false) || /^(익명|anonymous)$/i.test(uname || '');
+    if (trigger && uname && !anon) {
       var parts = splitName(uname);
       var me = el('span', 'as-me', esc(parts[0]));
       var avatar = $('img, .avatar', trigger);
@@ -293,6 +301,11 @@
     if (!p || !h1) { header.classList.add('as-header-compact'); return; }
 
     header.classList.add('as-hero');
+    var cur = $('.current-project', h1);
+    if (cur && !cur.closest('a') && p.identifier) {
+      var pl = el('a', 'as-project-link'); pl.href = (CTX.base || '') + '/projects/' + encodeURIComponent(p.identifier);
+      cur.parentNode.insertBefore(pl, cur); pl.appendChild(cur);
+    }
     var top = el('div', 'as-hero-top');
     if (p.status_label) {
       var pill = el('span', 'as-pill', '<i></i>' + esc(p.status_label) + (p.subtitle ? ' \u00b7 ' + esc(p.subtitle) : ''));
@@ -583,7 +596,7 @@
   // 선택박스 좌우에 글자나 다른 요소가 바로 붙어 있으면 6px 간격을 둡니다 (이미 공백이 있으면 그대로)
   function selectGap(sel) {
     sel.setAttribute('data-as-gap', '1');
-    if (sel.closest('.as-search-pop, .tabular p, td, #filters-table, .flyout-menu')) return;
+    if (sel.closest('.as-search-pop, .flyout-menu, .drdn-content')) return;
     var cs = getComputedStyle(sel);
     if (cs.display === 'block' || cs.position === 'absolute') return;
     function needs(node, side) {
@@ -604,7 +617,8 @@
 
   /* ---------- 요청 상세: 제목 줄 ---------- */
   function buildIssueTitle() {
-    if (!D.body.classList.contains('controller-issues') || !D.body.classList.contains('action-show')) return;
+    var b = D.body.classList;
+    if (!b.contains('controller-issues') || !(b.contains('action-show') || b.contains('action-edit') || b.contains('action-update'))) return;
     var content = D.getElementById('content'), h2 = $('#content > h2');
     if (!content || !h2 || $('.as-titlebar', content)) return;
     var bar = el('div', 'as-titlebar'), title = el('div', 'as-title');
@@ -648,35 +662,92 @@
     if (D.body.classList.contains('action-edit')) editMode(true);
   }
 
-  /* ---------- 로그인 ---------- */
+  /* ---------- 로그인 (LOGIN-1) ---------- */
   function buildLogin() {
     var form = D.getElementById('login-form');
-    if (!form || form.closest('.as-login')) return;
+    if (!form || form.closest('.as-login1')) return;
     var u = D.getElementById('username'), pw = D.getElementById('password');
     if (u) u.setAttribute('placeholder', t('phLogin'));
     if (pw) pw.setAttribute('placeholder', t('phPassword'));
-    var wrap = el('div', 'as-login');
-    var art = el('div', 'as-login-art',
-      '<div class="lg">' + LOGO + '<b>ASCII SOFT</b></div>' +
-      '<div><h2>' + t('artTitle') + '</h2><p>' + esc(t('artText')) + '</p></div>' +
-      '<ul>' + t('artTags').map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul>');
+    var wrap = el('div', 'as-login1');
     form.parentNode.insertBefore(wrap, form);
-    wrap.appendChild(art); wrap.appendChild(form);
-    hexField(art);
+    wrap.appendChild(form);
+    var bg = el('div', 'as-login-bg'); D.body.appendChild(bg); hexField(bg);
     var f = $('form', form);
-    if (f) {
-      var head = el('div', '', '<div class="as-login-title">' + esc(t('loginTitle')) + '</div><div class="as-login-sub">' + esc(t('loginSub')) + '</div>');
-      f.insertBefore(head, f.firstChild);
-      // 비밀번호 찾기 링크와 로그인 유지를 한 줄로
-      var lost = $('a.lost_password', form), auto = $('label[for="autologin"]', form);
-      if (lost || auto) {
-        var row = el('div', 'as-login-row');
-        if (auto) row.appendChild(auto); else row.appendChild(el('span'));
-        if (lost) row.appendChild(lost);
-        var submit = D.getElementById('login-submit');
-        f.insertBefore(row, submit);
-      }
+    if (!f) return;
+    f.insertBefore(el('div', 'as-login-brand', LOGO + '<div class="co">ASCII SOFT</div><div class="pc">Project Center</div>'), f.firstChild);
+    function field(input, icon) {
+      if (!input) return null;
+      var w = el('div', 'as-field', svg(icon));
+      input.parentNode.insertBefore(w, input); w.appendChild(input); return w;
     }
+    field(u, 'user');
+    var pf = field(pw, 'lock');
+    if (pf) {
+      var eye = el('button', 'as-eye', svg('eye')); eye.type = 'button'; eye.title = t('showPw'); eye.setAttribute('aria-label', t('showPw'));
+      eye.addEventListener('click', function () { pw.type = pw.type === 'password' ? 'text' : 'password'; pw.focus(); });
+      pf.appendChild(eye);
+    }
+    var lost = $('a.lost_password', form), auto = $('label[for="autologin"]', form), submit = D.getElementById('login-submit');
+    if (lost || auto) {
+      var row = el('div', 'as-login-row');
+      row.appendChild(auto || el('span'));
+      if (lost) row.appendChild(lost);
+      f.insertBefore(row, submit && submit.parentNode === f ? submit : null);
+    }
+    if (u && !u.value) setTimeout(function () { u.focus(); }, 50);
+  }
+
+  /* ---------- 하단: 회사 정보 (홈페이지와 동일) ---------- */
+  function buildFooter() {
+    var ft = D.getElementById('footer');
+    if (!ft || ft.classList.contains('as-footer')) return;
+    ft.classList.add('as-footer');
+    var year = new Date().getFullYear();
+    var html = '<div class="as-foot"><div class="as-foot-info"><span>아스키소프트</span>' +
+      '<span><a href="mailto:contact@asciisoft.com">EMAIL : contact@asciisoft.com</a><i class="sep"></i>' +
+      '<a href="tel:05052881001">TEL : 0505-288-1001</a><i class="sep"></i>FAX : 0505-288-1009</span>' +
+      '<span>\u00a9 2014-' + year + ' ASCII SOFT. All rights reserved.</span></div>' +
+      '<a class="as-foot-brand" href="https://asciisoft.com" target="_blank" rel="noopener">' + LOGO.replace('class="as-logo"', 'class="as-foot-logo"') + '<span>ASCII SOFT</span></a></div>';
+    var inner = $('.bgl .bgr', ft) || $('.bgr', ft) || ft;
+    inner.innerHTML = html;
+  }
+
+  /* ---------- 프로젝트 목록: 카드 ---------- */
+  function buildProjectCards() {
+    $$('#projects-index ul.projects.root > li.root').forEach(function (li) {
+      var box = $('div.root', li), a = box && $('a.project', box);
+      if (!box || !a || $('.as-pav', box)) return;
+      var name = norm(a.textContent);
+      box.insertBefore(el('span', 'as-pav', esc(name.charAt(0).toUpperCase())), box.firstChild);
+      if (a.classList.contains('closed') || a.classList.contains('archived')) li.classList.add('as-closed');
+    });
+  }
+
+  /* ---------- 요청 편집: 바꿀 수 없는 상태 값도 배지로 ---------- */
+  function issueReadonlyStatus() {
+    var names = {};
+    (CTX.statuses || []).forEach(function (st) { names[norm(st.name)] = 1; });
+    $$('#all_attributes p').forEach(function (p) {
+      if ($('select, input, textarea', p) || p.getAttribute('data-as')) return;
+      var label = $('label', p); if (!label) return;
+      var txt = norm(p.textContent.replace(label.textContent, ''));
+      if (!names[txt]) return;
+      p.setAttribute('data-as', '1'); p.classList.add('as-ro');
+      Array.prototype.slice.call(p.childNodes).forEach(function (n) { if (n !== label) n.remove(); });
+      p.appendChild(el('span', 'as-st', esc(txt))).setAttribute('data-k', keyOf(STATUS_KEYS, txt));
+    });
+  }
+
+  /* ---------- 검색조건: 필터 행이 추가될 때도 간격 적용 ---------- */
+  function watchQueryForm() {
+    var qf = D.getElementById('query_form') || D.getElementById('all_attributes');
+    if (!qf || !W.MutationObserver) return;
+    var tm;
+    new MutationObserver(function () {
+      clearTimeout(tm);
+      tm = setTimeout(function () { $$('select:not([data-as-gap])', qf).forEach(selectGap); issueReadonlyStatus(); }, 40);
+    }).observe(qf, { childList: true, subtree: true });
   }
 
   /* ---------- 홈: 시작 패널 ---------- */

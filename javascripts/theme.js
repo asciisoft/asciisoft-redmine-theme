@@ -1,5 +1,5 @@
 /*
- * ASCII SOFT Redmine Theme 1.4.0 — theme.js
+ * ASCII SOFT Redmine Theme 1.6.0 — theme.js
  * 플러그인(asciisoft_portal)이 있으면 알림 · 프로젝트 헤더 · 통계 · 화면 모드 저장을 사용하고,
  * 없으면 화면 꾸미기만 동작합니다. 외부 라이브러리 없이 동작합니다(레드마인 기본 jQuery만 선택적으로 사용).
  */
@@ -20,11 +20,11 @@
   var LANG = 'ko';
   var I18N = {
     ko: {
-      center: '프로젝트 센터', search: '검색', menu: '전체 메뉴', notifications: '알림', allRead: '모두 읽음',
+      center: 'Project Center', search: '검색', menu: '전체 메뉴', notifications: '알림', allRead: '모두 읽음',
       empty: '새 알림이 없습니다', all: '전체', filters: '검색조건', mode: '화면 모드', editHeader: '헤더 설정',
       sNew: '신규', sProgress: '진행', sOverdue: '지연', sPercent: '전체 진척도', byStatus: '상태별',
       private: '비공개', first: '처음', last: '끝', close: '닫기', today: '오늘', tomorrow: '내일',
-      phLogin: '계정', phPassword: '비밀번호', showPw: '비밀번호 보기', ovDesc: '프로젝트 설명', reply: '댓글달기', loginTitle: '로그인', loginSub: '계정 정보를 입력해 주세요',
+      phLogin: '계정', phPassword: '비밀번호', showPw: '비밀번호 보기', ovDesc: '프로젝트 설명', reply: '댓글달기', like: '좋아요', list: '목록', comment: '댓글', replyPost: '답글달기', cancel: '취소', writeComment: '댓글 작성', writeReply: '답글 작성', total: function (a, b, c) { return 'Total: ' + c + ' (' + a + ' - ' + b + ')'; }, isNew: 'NEW', loginTitle: '로그인', loginSub: '계정 정보를 입력해 주세요',
       artTitle: '요청부터 완료까지,<br>한 곳에서 함께 봅니다', artText: '요청 등록, 진행 상황, 문서와 일정을 고객사와 함께 확인하는 프로젝트센터입니다.',
       artTags: ['요청 관리', '진행 현황', '문서 · 위키', '일정'],
       hello: function (n) { return (n ? n + '님, ' : '') + '반갑습니다'; }, helloSub: '자주 쓰는 메뉴에서 바로 시작해 보세요.',
@@ -45,7 +45,7 @@
       empty: 'No new notifications', all: 'All', filters: 'Filters', mode: 'Color mode', editHeader: 'Header settings',
       sNew: 'New', sProgress: 'In progress', sOverdue: 'Overdue', sPercent: 'Progress', byStatus: 'By status',
       private: 'Private', first: 'First', last: 'Last', close: 'Close', today: 'today', tomorrow: 'tomorrow',
-      phLogin: 'Login', phPassword: 'Password', showPw: 'Show password', ovDesc: 'Description', reply: 'Reply', loginTitle: 'Sign in', loginSub: 'Enter your account details',
+      phLogin: 'Login', phPassword: 'Password', showPw: 'Show password', ovDesc: 'Description', reply: 'Reply', like: 'Like', list: 'List', comment: 'Comment', replyPost: 'Reply', cancel: 'Cancel', writeComment: 'Write a comment', writeReply: 'Write a reply', total: function (a, b, c) { return 'Total: ' + c + ' (' + a + ' - ' + b + ')'; }, isNew: 'NEW', loginTitle: 'Sign in', loginSub: 'Enter your account details',
       artTitle: 'From request to done,<br>all in one place', artText: 'A project center to share requests, progress, documents and schedules with your clients.',
       artTags: ['Requests', 'Progress', 'Docs · Wiki', 'Schedule'],
       hello: function (n) { return 'Welcome' + (n ? ', ' + n : ''); }, helloSub: 'Start from your most-used menus.',
@@ -103,7 +103,11 @@
     folder: '<path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
     list: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
     heart: '<path d="M12 20.5s-7.5-4.6-9.3-9.2C1.4 8 3.4 4.5 6.9 4.5c2 0 3.4 1.1 4.1 2.3.7-1.2 2.1-2.3 4.1-2.3 3.5 0 5.5 3.5 4.2 6.8-1.8 4.6-9.3 9.2-9.3 9.2z"/>',
-    reply: '<polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/>',
+    reply: '<polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/>',
+    cal: '<rect x="3" y="4.5" width="18" height="16.5" rx="3"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/>',
+    phone: '<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.9.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+    filePlus: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M12 18v-6M9 15h6"/>',
+    back: '<path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/>',
     eye: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>'
   };
   function svg(name, w) {
@@ -162,6 +166,13 @@
     safe(movePrivate);
     safe(issueEditLinks);
     safe(watchContent);
+    safe(rememberList);
+    safe(issueActionButtons);
+    safe(listButtons);
+    safe(queryPages);
+    safe(widgetLinks);
+    safe(newsExtras);
+    safe(messageExtras);
     safe(watchNewsEdit);
     safe(function () { decorate(D); });
     safe(buildToasts);
@@ -617,6 +628,15 @@
       if (sv) sv.outerHTML = svg('reply');
       if (!a.title) a.title = t('reply');
     });
+    $$('.pagination .items:not(.as-total)', root).forEach(function (sp) {
+      var m = norm(sp.textContent).match(/\((\d+)\s*-\s*(\d+)\s*\/\s*(\d+)\)/);
+      if (!m) return;
+      sp.classList.add('as-total'); sp.innerHTML = esc(t('total')(m[1], m[2], m[3])).replace(/(Total: )(\d+)/, '$1<b>$2</b>');
+    });
+    $$('.cal span.tip .avatar:not([data-as]), .cal span.tip [class*="avatar"]:not(img):not([data-as])', root).forEach(function (a) {
+      a.setAttribute('data-as', '1');
+      if (!$('img', a) && norm(a.textContent).length > 1) a.textContent = norm(a.textContent).charAt(0);
+    });
     $$('.reaction-button:not([data-as])', root).forEach(function (b) {
       b.setAttribute('data-as', '1');
       var sv = $('svg', b);
@@ -745,12 +765,12 @@
       var desc = null;
       Array.prototype.slice.call(left.children).forEach(function (c) {
         if (c.classList.contains('wiki') && !desc) {
-          desc = el('div', 'box as-ov-desc', '<h3>' + svg('list') + esc(t('ovDesc')) + '</h3>');
+          desc = el('div', 'box as-ov-desc');
           desc.appendChild(c); L.push(desc);
-        } else if (c.tagName === 'UL' && !c.classList.contains('as-keep')) {
-          c.remove();               // 홈페이지 주소 · 사용자 정의 필드 목록은 표시하지 않음
-        } else if (c.nodeType === 1) {
+        } else if (c.classList.contains('box') || c.querySelector('.box')) {
           L.push(c);
+        } else {
+          c.remove();               // 홈페이지 주소 · 사용자 정의 필드 등은 표시하지 않음 (프로젝트 설명만)
         }
       });
     }
@@ -826,6 +846,180 @@
     }).observe(c, { childList: true, subtree: true });
   }
 
+  /* ---------- 목록: 마지막으로 보던 목록 주소 기억 ---------- */
+  var LIST_PAGES = { 'issues': 'index', 'news': 'index', 'documents': 'index', 'boards': 'show', 'files': 'index', 'wiki': 'index', 'projects': 'index' };
+  function ctrl() { var m = D.body.className.match(/controller-([\w-]+)/); return m ? m[1] : ''; }
+  function act() { var m = D.body.className.match(/action-([\w-]+)/); return m ? m[1] : ''; }
+  function rememberList() {
+    var c = ctrl();
+    if (LIST_PAGES[c] === act()) { try { sessionStorage.setItem('as-list-' + c, W.location.href); } catch (e) { } }
+  }
+  function listUrl(c) {
+    var u = null; try { u = sessionStorage.getItem('as-list-' + c); } catch (e) { }
+    if (u) return u;
+    var p = CTX.project, base = CTX.base || '';
+    if (p && { issues: 1, news: 1, documents: 1, files: 1 }[c]) return base + '/projects/' + encodeURIComponent(p.identifier) + '/' + c;
+    if (c === 'boards') { var b = $('#content .breadcrumb a:last-of-type, p.breadcrumb a:last-of-type'); if (b) return b.href; }
+    return null;
+  }
+  function makeBtn(cls, icon, label, href) {
+    var a = el('a', 'icon ' + cls, svg(icon) + '<span class="icon-label">' + esc(label) + '</span>');
+    a.href = href || '#'; return a;
+  }
+  function listButtons() {
+    var c = ctrl(), a = act(), key = c === 'messages' ? 'boards' : c;
+    var detail = { issues: ['show', 'new', 'edit', 'create', 'update', 'copy'], news: ['show', 'new', 'edit', 'create', 'update'],
+      documents: ['show', 'new', 'edit', 'create', 'update'], messages: ['show', 'new', 'edit', 'create', 'update', 'reply'] }[c];
+    if (!detail || detail.indexOf(a) < 0) return;
+    var url = listUrl(key); if (!url) return;
+    var ctxs = $$('#content > .contextual, .as-titlebar > .contextual');
+    if (!ctxs.length) {
+      var h2 = $('#content > h2'); if (!h2) return;
+      var nc = el('div', 'contextual'); h2.parentNode.insertBefore(nc, h2); ctxs = [nc];
+    }
+    ctxs.forEach(function (cx) { if (!$('a.as-list-btn', cx)) cx.appendChild(makeBtn('as-list-btn', 'back', t('list'), url)); });
+  }
+
+  /* ---------- 요청 상세: 좋아요 · 댓글달기 버튼을 제목 줄로 ---------- */
+  function issueActionButtons() {
+    var b = D.body.classList;
+    if (!b.contains('controller-issues') || !b.contains('action-show')) return;
+    var top = $('.as-titlebar > .contextual');
+    var react = $('div.issue .reaction-button');
+    var holder = react && (react.closest('[id^="reaction"], .reaction, .reactions') || react);
+    var quote = $('div.issue a.icon-quote');
+    $$('#content .contextual').forEach(function (cx, i) {
+      if (!$('a.icon-edit', cx) || cx.closest('div.issue, div.journal')) return;
+      if (quote && !$('a.as-reply-btn', cx)) {
+        var r = makeBtn('as-reply-btn', 'reply', t('reply'), '#');
+        r.addEventListener('click', function (e) { e.preventDefault(); quote.click(); });
+        cx.insertBefore(r, cx.firstChild);
+      } else if (!quote && !$('a.as-reply-btn', cx) && W.showAndScrollTo && D.getElementById('update')) {
+        var r2 = makeBtn('as-reply-btn', 'reply', t('comment'), '#');
+        r2.addEventListener('click', function (e) { e.preventDefault(); W.showAndScrollTo('update', 'issue_notes'); });
+        cx.insertBefore(r2, cx.firstChild);
+      }
+      if (holder && cx === top && !holder.closest('.as-titlebar')) cx.insertBefore(holder, cx.firstChild);
+    });
+    if (quote) { var qc = quote.closest('.contextual'); quote.style.display = 'none'; if (qc && !norm(qc.textContent)) qc.style.display = 'none'; }
+  }
+
+  /* ---------- 검색조건이 있는 모든 화면: [검색조건] 버튼 · 기본 접힘 · 필수 조작부 분리 ---------- */
+  function queryPages() {
+    var form = D.getElementById('query_form');
+    if (!form) return;
+    var content = D.getElementById('content');
+    if (ctrl() === 'projects' && act() === 'index' && CTX.user && !CTX.user.internal) {
+      form.style.display = 'none'; return;                   // 검색영역은 지정 그룹 사용자에게만
+    }
+    // 1) 필수 조작부(더 크게 · 더 작게 · 이전/다음 · 개월 · 월 · 연도)를 검색영역 아래로
+    var bar = el('div', 'as-qbar');
+    var moved = false;
+    $$('p.contextual', form).forEach(function (pc) { bar.appendChild(pc); moved = true; });
+    ['months', 'month', 'year'].forEach(function (id) {
+      var f = D.getElementById(id);
+      if (!f || !form.contains(f)) return;
+      var wrap = f.closest('p, td, span, label') || f;
+      if (wrap === form || wrap.closest('#filters-table')) wrap = f;
+      if (bar.contains(wrap)) return;
+      bar.insertBefore(wrap, bar.firstChild); moved = true;
+    });
+    if (moved) {
+      $$('input, select', bar).forEach(function (f) {
+        f.setAttribute('form', 'query_form');
+        f.addEventListener('change', function () { if (W.jQuery) W.jQuery(form).submit(); else form.submit(); });
+      });
+      form.parentNode.insertBefore(bar, form.nextSibling);
+    }
+    // 2) 검색조건 · 옵션은 기본으로 접기
+    later(function () {
+      $$('fieldset.collapsible', form).forEach(function (fs) {
+        var lg = $('legend', fs);
+        if (!fs.classList.contains('collapsed') && lg && W.toggleFieldset) W.toggleFieldset(lg);
+      });
+    });
+    // 3) 요청 목록 외 화면에도 [검색조건] 버튼
+    if (isIssueIndex() || $('.as-toolbar', content)) return;
+    var tb = el('div', 'as-toolbar');
+    var right = el('div', 'as-toolbar-r');
+    var fbtn = el('button', 'as-btn', svg('filter') + esc(t('filters')));
+    fbtn.type = 'button';
+    var key = 'as-filter-open-' + ctrl();
+    form.classList.toggle('as-collapsed', store(key) !== '1');
+    fbtn.addEventListener('click', function () { var o = form.classList.toggle('as-collapsed'); store(key, o ? '0' : '1'); });
+    right.appendChild(fbtn); tb.appendChild(right);
+    form.parentNode.insertBefore(tb, form);
+  }
+
+  /* ---------- 위젯 링크: 구분자(|) 없이 둥근 버튼 ---------- */
+  function widgetLinks() {
+    $$('.issues.box p, .news.box p').forEach(function (p) {
+      var links = $$('a', p);
+      if (!links.length || $('.wiki, .author, .summary', p)) return;
+      var onlyLinks = Array.prototype.every.call(p.childNodes, function (n) { return n.nodeType !== 3 || /^[\s|]*$/.test(n.textContent); });
+      if (!onlyLinks) return;
+      Array.prototype.slice.call(p.childNodes).forEach(function (n) { if (n.nodeType === 3) n.remove(); });
+      p.classList.add('as-pill-links');
+    });
+  }
+
+  /* ---------- 뉴스: 빈 '댓글' 제목 숨김 · 오늘 올라온 글 표시 ---------- */
+  function newsExtras() {
+    var cm = D.getElementById('comments'), form = D.getElementById('add_comment_form');
+    if (cm) {
+      var items = $$('div.journal', cm).length;
+      if (!items && !form) cm.style.display = 'none';
+      var h = $('h3', cm); if (h && items && !$('.as-count', h)) h.appendChild(el('span', 'as-count', String(items)));
+    }
+    if (form) {
+      $$('#content p').forEach(function (p) {
+        var a = $('a', p);
+        if (a && /add_comment_form/.test(a.getAttribute('onclick') || '') && !p.closest('form')) p.classList.add('as-cmt-toggle');
+      });
+      form.style.display = '';
+      if (!$('.as-cmt-title', form)) form.insertBefore(el('div', 'as-cmt-title', svg('chat') + esc(t('writeComment'))), form.firstChild);
+    }
+    var today = new Date(); var ymd = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+    $$('#content article.news-article').forEach(function (ar) {
+      var tm = $('p.author a[title], p.author span[title], p.author time', ar);
+      var stamp = tm && (tm.getAttribute('title') || tm.getAttribute('datetime') || '');
+      if (stamp && stamp.indexOf(ymd) === 0 && !ar.classList.contains('as-today')) {
+        ar.classList.add('as-today');
+        var h = $('header h3', ar); if (h) h.appendChild(el('span', 'as-new-badge', t('isNew')));
+      }
+    });
+  }
+
+  /* ---------- 게시판: 답글달기 · 답글 입력 취소/목록 ---------- */
+  function messageExtras() {
+    if (ctrl() !== 'messages') return;
+    $$('#content a.icon-quote').forEach(function (a) {
+      var sv = $('svg', a); if (sv) sv.outerHTML = svg('filePlus');
+      a.title = t('replyPost');
+      var lb = $('.icon-label', a); if (lb) lb.textContent = t('replyPost');
+    });
+    $$('#content > p > a, #content > p > span > a').forEach(function (a) {
+      if (/reply/i.test(a.getAttribute('onclick') || '') || /reply/.test(a.getAttribute('href') || '')) {
+        var p = a.closest('p'); if (p && !p.closest('.contextual')) p.style.display = 'none';
+      }
+    });
+    var rp = D.getElementById('replies'), rh = rp && $('h3', rp);
+    if (rh && !$('.as-count', rh)) {
+      var m = norm(rh.textContent).match(/\((\d+)\)/);
+      if (m) { rh.innerHTML = rh.innerHTML.replace(/\s*\(\d+\)\s*$/, ''); rh.appendChild(el('span', 'as-count', m[1])); }
+    }
+    var reply = D.getElementById('reply'), sub = reply && $('input[type="submit"]', reply);
+    if (reply && !$('.as-cmt-title', reply)) reply.insertBefore(el('div', 'as-cmt-title', svg('chat') + esc(t('writeReply'))), reply.firstChild);
+    if (sub && !$('.as-cancel-btn', reply)) {
+      var c = el('a', 'as-cancel-btn', esc(t('cancel'))); c.href = '#';
+      c.addEventListener('click', function (e) { e.preventDefault(); reply.style.display = 'none'; });
+      var url = listUrl('boards'), l = url ? el('a', 'as-cancel-btn', esc(t('list'))) : null;
+      if (l) l.href = url;
+      sub.parentNode.insertBefore(c, sub.nextSibling);
+      if (l) sub.parentNode.insertBefore(l, c.nextSibling);
+    }
+  }
+
   /* ---------- 하단: 회사 정보 (홈페이지와 동일) ---------- */
   function buildFooter() {
     var ft = D.getElementById('footer');
@@ -849,6 +1043,16 @@
       var name = norm(a.textContent);
       box.insertBefore(el('span', 'as-pav', esc(name.charAt(0).toUpperCase())), box.firstChild);
       if (a.classList.contains('closed') || a.classList.contains('archived')) li.classList.add('as-closed');
+      var id = ((a.getAttribute('href') || '').match(/\/projects\/([^\/?#]+)/) || [])[1];
+      var info = id && CTX.project_cards && CTX.project_cards[decodeURIComponent(id)];
+      if (info && !$('.as-pmeta', box)) {
+        var meta = el('div', 'as-pmeta'), period = '';
+        if (info.start || info.end) period = (info.start || '') + ' ~ ' + (info.end || '');
+        if (period) meta.appendChild(el('span', 'as-pm-period', svg('cal') + esc(period.trim())));
+        var who = [info.manager, info.phone].filter(Boolean);
+        if (who.length) meta.appendChild(el('span', '', svg('user') + esc(info.manager || '') + (info.phone ? '<span class="as-pm-phone">' + (info.manager ? '&nbsp;&nbsp;' : '') + esc(info.phone) + '</span>' : '')));
+        if (meta.childNodes.length) { var dsc = $('.wiki.description', box); if (dsc && dsc.parentNode === box) box.insertBefore(meta, dsc); else box.appendChild(meta); }
+      }
     });
   }
 
